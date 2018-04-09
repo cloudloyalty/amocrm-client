@@ -1,0 +1,29 @@
+{
+    "name": "cloudloyalty/amocrm-client",
+    "type": "library",
+    "description": "AmoCRM PHP HTTP client library",
+    "keywords": [
+        "http",
+        "rest",
+        "web service",
+        "client",
+        "HTTP client",
+        "AmoCRM"
+    ],
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Denis Girko",
+            "email": "denis@cloudloyalty.ru"
+        }
+    ],
+    "require": {
+        "php": ">=7.0",
+        "guzzlehttp/guzzle": "^6.3"
+    },
+    "autoload": {
+        "psr-4": {
+           "AmoCRM\\": "src/"
+        }
+    }
+}
