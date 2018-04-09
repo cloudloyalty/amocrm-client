@@ -101,18 +101,18 @@ class Client
             'Content-Type' => 'application/x-www-form-urlencoded; charset=UTF-8'
         ];
 
-        $entity = $entity->serialize();
+        $data = $entity->serialize();
 
         if ($entity->isNew()) {
             $body = http_build_query([
                 'add' => [
-                    $entity
+                    $data
                 ]
             ]);
         } else {
             $body = http_build_query([
                 'update' => [
-                    $entity
+                    $data
                 ]
             ]);
         }
