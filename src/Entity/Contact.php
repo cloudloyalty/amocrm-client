@@ -30,6 +30,11 @@ class Contact implements SerializableEntityInterface
      */
     private $customFields = [];
 
+    /**
+     * @var string[]
+     */
+    private $tags = [];
+
 
     public function serialize(): array
     {
@@ -42,7 +47,8 @@ class Contact implements SerializableEntityInterface
                     return $entity->serialize();
                 },
                 $this->customFields
-            )
+            ),
+            'tags' => join(',', $this->tags),
         ];
     }
 
@@ -133,6 +139,34 @@ class Contact implements SerializableEntityInterface
     public function addCustomField(CustomField $customField)
     {
         $this->customFields[] = $customField;
+        return $this;
+    }
+
+    /**
+     * @return string[]
+     */
+    public function getTags(): array
+    {
+        return $this->tags;
+    }
+
+    /**
+     * @param string[] $tags
+     * @return $this
+     */
+    public function setTags(array $tags)
+    {
+        $this->tags = $tags;
+        return $this;
+    }
+
+    /**
+     * @param string $tag
+     * @return $this
+     */
+    public function addTag(string $tag)
+    {
+        $this->tags[] = $tag;
         return $this;
     }
 }
