@@ -121,6 +121,11 @@ class Client
 
         $result = \GuzzleHttp\json_decode($response->getBody()->getContents());
 
+        // Em... One morning AmoCRM just started to respond in new format
+        if (!empty($result->response)) {
+            $result = reset(reset($result->response));
+        }
+
         if ($result->status != static::STATUS_SUCCESS) {
             throw new PersistingException($result->error, $result->error_code);
         }
