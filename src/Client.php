@@ -34,6 +34,11 @@ class Client
      */
     protected $subdomain;
 
+    /**
+     * @var callable
+     */
+    protected $logCallback;
+
 
     /**
      * @param string $subdomain
@@ -117,9 +122,28 @@ class Client
             ]);
         }
 
-        $response = $this->httpClient->send((new Request('POST', $url, $headers, $body)));
+        $request = new Request('POST', $url, $headers, $body);
+        $response = $this->httpClient->send($request);
+        $responseBody = $response->getBody()->getContents();
 
-        $result = \GuzzleHttp\json_decode($response->getBody()->getContents());
+        if (is_callable($this->logCallback)) {
+            call_user_func($this->logCallback, [
+                'request' => [
+                    'method'  => $request->getMethod(),
+                    'url'     => (string)$request->getUri(),
+                    'headers' => $request->getHeaders(),
+                    'body'    => $body,
+                ],
+                'response' => [
+                    'statusCode' => $response->getStatusCode(),
+                    'status'     => $response->getReasonPhrase(),
+                    'headers'    => $response->getHeaders(),
+                    'body'       => $responseBody,
+                ]
+            ]);
+        }
+
+        $result = \GuzzleHttp\json_decode($responseBody);
 
         // Em... One morning AmoCRM just started to respond in new format
         if (!empty($result->response)) {
@@ -129,5 +153,21 @@ class Client
         if ($result->status != static::STATUS_SUCCESS) {
             throw new PersistingException($result->error, $result->error_code);
         }
+    }
+
+    /**
+     * @return callable
+     */
+    public function getLogCallback(): callable
+    {
+        return $this->logCallback;
+    }
+
+    /**
+     * @param callable $logCallback
+     */
+    public function setLogCallback(callable $logCallback)
+    {
+        $this->logCallback = $logCallback;
     }
 }
