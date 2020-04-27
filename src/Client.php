@@ -6,6 +6,8 @@ use AmoCRM\Entity\Contact;
 use AmoCRM\Entity\CustomField;
 use AmoCRM\Entity\Lead;
 use AmoCRM\Entity\PersistableEntityInterface;
+use AmoCRM\Entity\Result;
+use AmoCRM\Entity\Task;
 use AmoCRM\Entity\UnsortedForm;
 use AmoCRM\Exception\PersistingException;
 use GuzzleHttp\ClientInterface;
@@ -84,6 +86,11 @@ class Client
         return new Lead();
     }
 
+    public function createTask(): Task
+    {
+        return new Task();
+    }
+
     /**
      * @param int $id
      * @return CustomField
@@ -95,10 +102,10 @@ class Client
 
     /**
      * @param PersistableEntityInterface $entity
-     * @throws GuzzleException
+     * @return Result
      * @throws PersistingException
      */
-    public function persist(PersistableEntityInterface $entity)
+    public function persist(PersistableEntityInterface $entity): Result
     {
         $url = 'https://' . $this->subdomain . static::AMOCRM_DOMAIN . $entity->getResource() . '?' . $this->creds;
 
@@ -123,7 +130,11 @@ class Client
         }
 
         $request = new Request('POST', $url, $headers, $body);
-        $response = $this->httpClient->send($request);
+        try {
+            $response = $this->httpClient->send($request);
+        } catch (GuzzleException $e) {
+            throw new PersistingException($e->getMessage(), $e->getCode(), $e);
+        }
         $responseBody = $response->getBody()->getContents();
 
         if (is_callable($this->logCallback)) {
@@ -150,9 +161,11 @@ class Client
             $result = reset(reset($result->response));
         }
 
-        if ($result->status != static::STATUS_SUCCESS) {
+        if (!empty($result->status) && $result->status != static::STATUS_SUCCESS) {
             throw new PersistingException($result->error, $result->error_code);
         }
+
+        return new Result($result);
     }
 
     /**

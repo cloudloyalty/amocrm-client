@@ -3,7 +3,7 @@
 namespace AmoCRM\Entity;
 
 
-class Contact implements SerializableEntityInterface
+class Contact implements PersistableEntityInterface
 {
     /**
      * @var int
@@ -168,5 +168,15 @@ class Contact implements SerializableEntityInterface
     {
         $this->tags[] = $tag;
         return $this;
+    }
+
+    public function getResource(): string
+    {
+        return '/api/v2/contacts';
+    }
+
+    public function isNew(): bool
+    {
+        return true;
     }
 }

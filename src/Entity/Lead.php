@@ -3,7 +3,7 @@
 namespace AmoCRM\Entity;
 
 
-class Lead implements SerializableEntityInterface
+class Lead implements PersistableEntityInterface
 {
     /**
      * @var int
@@ -26,6 +26,11 @@ class Lead implements SerializableEntityInterface
     private $updatedAt;
 
     /**
+     * @var int
+     */
+    private $statusId;
+
+    /**
      * @var CustomField[]
      */
     private $customFields = [];
@@ -35,6 +40,11 @@ class Lead implements SerializableEntityInterface
      */
     private $tags = [];
 
+    /**
+     * @var int[]
+     */
+    private $contactsId = [];
+
 
     public function serialize(): array
     {
@@ -42,6 +52,7 @@ class Lead implements SerializableEntityInterface
             'name' => $this->name,
             'created_at' => $this->createdAt ?: time(),
             'updated_at' => $this->updatedAt ?: time(),
+            'status_id' => $this->statusId,
             'custom_fields' => array_map(
                 function (SerializableEntityInterface $entity) {
                     return $entity->serialize();
@@ -49,6 +60,7 @@ class Lead implements SerializableEntityInterface
                 $this->customFields
             ),
             'tags' => join(',', $this->tags),
+            'contacts_id' => join(',', $this->contactsId),
         ];
     }
 
@@ -115,6 +127,20 @@ class Lead implements SerializableEntityInterface
     }
 
     /**
+     * @return int
+     */
+    public function getStatusId(): int
+    {
+        return $this->statusId;
+    }
+
+    public function setStatusId(int $statusId): self
+    {
+        $this->statusId = $statusId;
+        return $this;
+    }
+
+    /**
      * @return CustomField[]
      */
     public function getCustomFields(): array
@@ -168,5 +194,39 @@ class Lead implements SerializableEntityInterface
     {
         $this->tags[] = $tag;
         return $this;
+    }
+
+    /**
+     * @return int[]
+     */
+    public function getContactsId(): array
+    {
+        return $this->contactsId;
+    }
+
+    /**
+     * @param int[] $contactsId
+     * @return Lead
+     */
+    public function setContactsId(array $contactsId): self
+    {
+        $this->contactsId = $contactsId;
+        return $this;
+    }
+
+    public function addContactId(int $contactId): self
+    {
+        $this->contactsId[] = $contactId;
+        return $this;
+    }
+
+    public function getResource(): string
+    {
+        return '/api/v2/leads';
+    }
+
+    public function isNew(): bool
+    {
+        return true;
     }
 }
