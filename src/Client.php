@@ -135,13 +135,13 @@ class Client
         } catch (GuzzleException $e) {
             throw new PersistingException($e->getMessage(), $e->getCode(), $e);
         }
-        $responseBody = $response->getBody()->getContents();
+        $responseBody = (string) $response->getBody();
 
         if (is_callable($this->logCallback)) {
             call_user_func($this->logCallback, [
                 'request' => [
                     'method'  => $request->getMethod(),
-                    'url'     => (string)$request->getUri(),
+                    'url'     => (string) $request->getUri(),
                     'headers' => $request->getHeaders(),
                     'body'    => $body,
                 ],
