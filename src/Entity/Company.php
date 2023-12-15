@@ -7,6 +7,7 @@ class Company implements SerializableEntityInterface
 {
     /**
      * @var int
+     * @phpstan-ignore-next-line
      */
     private $id;
 

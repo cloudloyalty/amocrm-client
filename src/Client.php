@@ -158,10 +158,12 @@ class Client
 
         // Em... One morning AmoCRM just started to respond in new format
         if (!empty($result->response)) {
-            $result = reset(reset($result->response));
+            $result = reset($result->response);
+            $result = reset($result);
         }
 
         if (!empty($result->status) && $result->status != static::STATUS_SUCCESS) {
+            // @phpstan-ignore-next-line
             throw new PersistingException($result->error, $result->error_code);
         }
 
@@ -179,7 +181,7 @@ class Client
     /**
      * @param callable $logCallback
      */
-    public function setLogCallback(callable $logCallback)
+    public function setLogCallback(callable $logCallback): void
     {
         $this->logCallback = $logCallback;
     }
