@@ -7,6 +7,7 @@ class Contact implements PersistableEntityInterface
 {
     /**
      * @var int
+     * @phpstan-ignore-next-line
      */
     private $id;
 
